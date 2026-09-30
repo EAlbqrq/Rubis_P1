@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Listas 1 · Álgebra Linear e Cálculo</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--ink:#1d2433;--mute:#6b7488;--line:#e3e7f0;--green:#1fa971;--gbg:#dff6ec;--red:#e5484d;--rbg:#fde8e8;--pur:#6c5ce7;--pbg:#ecebfd;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141826;--card:#1d2335;--ink:#eef1f8;--mute:#9aa3b8;--line:#2d3550;--gbg:#15382c;--rbg:#3d1f24;--pbg:#2a2750}}
+:root[data-theme="dark"]{--bg:#141826;--card:#1d2335;--ink:#eef1f8;--mute:#9aa3b8;--line:#2d3550;--gbg:#15382c;--rbg:#3d1f24;--pbg:#2a2750}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:500 17px/1.5 Nunito,system-ui,sans-serif}
+main{max-width:640px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:24px;font-weight:900;margin:4px 0 14px}
+.tabs{display:flex;gap:8px;margin-bottom:16px}
+.tab{flex:1;padding:12px;border:2px solid var(--line);border-radius:14px;background:var(--card);color:var(--mute);font:900 15px Nunito,sans-serif;cursor:pointer}
+.tab[aria-selected=true]{border-color:var(--pur);background:var(--pbg);color:var(--pur)}
+.bar{height:12px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--green);border-radius:99px;transition:width .4s}
+.meta{display:flex;justify-content:space-between;color:var(--mute);font-size:14px;margin:8px 2px 14px;font-weight:700}
+.dots{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.dot{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);background:var(--card);font:700 11px Nunito,sans-serif;color:var(--mute);cursor:pointer;padding:0}
+.dot.ok{background:var(--green);border-color:var(--green);color:#fff}.dot.no{background:var(--red);border-color:var(--red);color:#fff}.dot.cur{border-color:var(--pur);color:var(--pur)}
+.card{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:22px}
+.ref{display:inline-block;background:var(--pbg);color:var(--pur);font-weight:900;font-size:13px;border-radius:99px;padding:2px 12px}
+.q{font-size:20px;font-weight:700;margin:12px 0 4px}
+.hint{color:var(--mute);font-size:14px;margin:0 0 14px}
+input{width:100%;box-sizing:border-box;padding:14px 16px;border:2px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);font:700 18px Nunito,sans-serif}
+input:focus{outline:3px solid var(--pur);border-color:transparent}
+.row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+button.b{flex:1;min-width:120px;padding:14px;border:0;border-radius:14px;font:900 16px Nunito,sans-serif;cursor:pointer;background:var(--green);color:#fff;box-shadow:0 4px 0 #148558}
+button.b:active{transform:translateY(3px);box-shadow:0 1px 0 #148558}
+button.b.alt{background:var(--card);color:var(--pur);border:2px solid var(--pur);box-shadow:0 4px 0 var(--pur)}
+button:focus-visible{outline:3px solid var(--pur);outline-offset:2px}
+.fb{margin-top:16px;padding:14px 16px;border-radius:14px;font-weight:900}
+.fb.ok{background:var(--gbg);color:var(--green)}.fb.no{background:var(--rbg);color:var(--red)}
+.why{margin-top:12px;padding:14px 16px;border-left:5px solid var(--pur);background:var(--pbg);border-radius:0 14px 14px 0;animation:o .25s}
+@keyframes o{from{opacity:0;transform:translateY(-4px)}}
+@media(prefers-reduced-motion:reduce){.why{animation:none}.bar i{transition:none}}
+.end{text-align:center;padding:20px 0}.end b{font-size:40px;color:var(--green)}
+</style>
+</head>
+<body>
+<main>
+<h1>Listas 1 · Prof. Rubianes</h1>
+<div class="tabs" role="tablist">
+<button class="tab" role="tab" data-l="A">Álgebra Linear I</button>
+<button class="tab" role="tab" data-l="C">Cálculo 1</button>
+</div>
+<div class="bar"><i id="pb"></i></div>
+<div class="meta"><span id="m1"></span><span id="m2"></span></div>
+<div class="dots" id="dots"></div>
+<div id="stage"></div>
+</main>
+<script>
+// [lista, ref, enunciado, respostas aceitas, dica de formato, porquê]
+const Q=[
+["A","Q1.1","O ângulo entre u e v é 60°. Qual é o ângulo entre u e −v (em graus)?",["120"],"Só o número.","Trocar o sinal de um vetor inverte o sentido dele, então o ângulo vira 180° − 60° = 120°."],
+["A","Q1.3","O ângulo entre u e v é 60°. Qual é o ângulo entre −u e −v (em graus)?",["60"],"Só o número.","Inverter os dois vetores mantém o ângulo: cos θ = (−u)·(−v)/(|u||v|) = u·v/(|u||v|). Continua 60°."],
+["A","Q2.1","Com u = (3, −1) e 2v = (−1, 2), ache x tal que 4(u − v) + x/3 = 2u − x.",["(-6,9/2)"],"Formato (a, b). Frações como 9/2 valem.","Como 2v = (−1,2), 4v = (−2,4). Isolando: (4/3)x = −2u + 4v = (−6,2) + (−2,4) = (−8,6). Logo x = (3/4)(−8,6) = (−6, 9/2)."],
+["A","Q3.1","Ache x para que u = (x, 0, 3) e v = (1, x, 3) sejam ortogonais.",["-9"],"","Ortogonais ⇒ u·v = 0. u·v = x·1 + 0·x + 3·3 = x + 9 = 0, então x = −9."],
+["A","Q3.2","Ache x para que u = (x, x, 4) e v = (4, x, 1) sejam ortogonais.",["-2"],"","u·v = 4x + x² + 4 = (x + 2)² = 0, então x = −2 (raiz dupla)."],
+["A","Q6","Se u + v + w = 0, |u| = 3/2, |v| = 1/2 e |w| = 2, calcule u·v + v·w + w·u.",["-13/4"],"Fração vale.","Eleve ao quadrado: |u+v+w|² = |u|²+|v|²+|w|² + 2(u·v + v·w + w·u) = 0. Com 9/4 + 1/4 + 4 = 13/2, a soma pedida é −(13/2)/2 = −13/4."],
+["A","Q9","Para que valores de m a área do paralelogramo de u = (m, −3, 1) e v = (1, −2, 2) é √26?",["0,2","2,0"],"Separe os valores por vírgula.","A área é |u × v|. u × v = (−4, 1 − 2m, 3 − 2m). Então 16 + (1−2m)² + (3−2m)² = 26, que dá 8m² − 16m = 0, ou seja, m = 0 ou m = 2."],
+["A","Q13","A reta x = 1 − λ, y = λ, z = 4 + 2λ contém o ponto Q = (−3, 4, 12)? (sim ou não)",["sim","s"],"sim / não","Tome x = −3: 1 − λ = −3 ⇒ λ = 4. Então y = 4 e z = 4 + 8 = 12. Bate com Q, então Q pertence à reta."],
+["A","Q18","O plano que passa por A(2, 1, −1) com normal v = (1, −2, 3) tem equação x − 2y + 3z + d = 0. Quanto vale d?",["3"],"","Substitua A: 2 − 2 − 3 + d = 0 ⇒ d = 3. O vetor normal dá os coeficientes (1, −2, 3)."],
+["A","Q22","O plano por A(1, −2, −2) perpendicular a η = (2, −1, 2) tem equação 2x − y + 2z + d = 0. Quanto vale d?",["0"],"","Substituindo A: 2 + 2 − 4 + d = 0 ⇒ d = 0."],
+["A","Q24","Dê um vetor diretor da reta que passa por A(3, 0, 2) e B(0, 3, 3), calculando B − A.",["(-3,3,1)"],"Formato (a, b, c).","B − A = (0−3, 3−0, 3−2) = (−3, 3, 1). Com A e esse vetor, escreve-se x = 3 − 3λ, y = 3λ, z = 2 + λ."],
+["A","Q25","O plano paralelo a 2x − y + 5z − 3 = 0 que passa por A(1, −2, 1) é 2x − y + 5z + d = 0. Quanto vale d?",["-9"],"","Planos paralelos têm a mesma normal (2, −1, 5). Em A: 2 + 2 + 5 + d = 0 ⇒ d = −9."],
+["A","Q26","Onde a reta pela origem com direção i + 2j + k corta o plano 2x + y + z = 5?",["(1,2,1)"],"Formato (x, y, z).","A reta é (λ, 2λ, λ). Substituindo: 2λ + 2λ + λ = 5 ⇒ λ = 1. O ponto é (1, 2, 1)."],
+["A","Q32","Ache a interseção de (x,y,z) = (3,−1,0) + λ(1,1,1) com o plano x + y + z = 2.",["(3,-1,0)"],"Formato (x, y, z).","(3+λ) + (−1+λ) + λ = 2 ⇒ 2 + 3λ = 2 ⇒ λ = 0. O ponto já é o de partida: (3, −1, 0)."],
+["A","Q33","A reta (1,−2,3) + λ(2,−1,4) está contida no plano 2x − y + z = 5? (sim ou não)",["não","nao","n"],"sim / não","Teste o ponto (1,−2,3): 2 + 2 + 3 = 7 ≠ 5. Nem o ponto está no plano, então a reta não está contida."],
+["A","Q35","A reta (1,0,−2) + λ(3,−1,5) é perpendicular ao plano 3x − y + 5z + 4 = 0? (sim ou não)",["sim","s"],"sim / não","Uma reta é perpendicular ao plano quando o vetor diretor é paralelo à normal. Aqui os dois são (3, −1, 5)."],
+["A","Q37","Qual o ângulo entre u = (2, −1, 3) e v = (−1, 4, 2) (em graus)?",["90"],"Só o número.","u·v = −2 − 4 + 6 = 0. Produto escalar zero significa vetores ortogonais, então o ângulo é 90°."],
+["A","Q38","Calcule u × v para u = (1, 2, 3) e v = (0, −1, 2).",["(7,-2,-1)"],"Formato (a, b, c).","u × v = (2·2 − 3·(−1), 3·0 − 1·2, 1·(−1) − 2·0) = (7, −2, −1)."],
+["C","Q10b","Calcule lim x→−4 (x² + 5x + 4)/(x² + 3x − 4).",["3/5"],"Fração vale.","Fatore: (x+4)(x+1)/((x+4)(x−1)). Cancele (x+4) e substitua x = −4: (−3)/(−5) = 3/5."],
+["C","Q10c","Calcule lim x→0 ((4 + x)² − 16)/x.",["8"],"","O numerador é 8x + x². Divida por x: 8 + x → 8."],
+["C","Q10i","Calcule lim x→7 (√(x+2) − 3)/(x − 7).",["1/6"],"Fração vale.","Multiplique pelo conjugado: (x+2−9)/((x−7)(√(x+2)+3)) = 1/(√(x+2)+3) → 1/6."],
+["C","Q10m","Calcule lim x→1 (x³ − 1)/(x − 1).",["3"],"","x³ − 1 = (x−1)(x²+x+1). Cancelando (x−1) e fazendo x = 1: 3."],
+["C","Q11b","Calcule lim x→+∞ (3x + 5)/(x − 4).",["3"],"","Divida tudo por x: (3 + 5/x)/(1 − 4/x) → 3/1 = 3."],
+["C","Q11c","Calcule lim x→−∞ (1 − x − x²)/(2x² − 7).",["-1/2"],"Fração vale.","Mesmo grau no topo e embaixo: o limite é a razão dos coeficientes líderes, −1/2."],
+["C","Q15","Calcule lim x→0+ ln(3x)/ln(4x).",["1"],"","ln(3x) = ln 3 + ln x e ln(4x) = ln 4 + ln x. Dividindo por ln x: (ln3/ln x + 1)/(ln4/ln x + 1) → 1."],
+["C","Q16","Calcule lim x→+∞ (√(x² + 1) − x).",["0"],"","Multiplique pelo conjugado: 1/(√(x²+1) + x), que vai a 0."],
+["C","Q17","Existe a tal que lim x→−2 (3x² + ax + a + 3)/(x² + x − 2) existe. Qual é o valor de a?",["15"],"","O denominador (x+2)(x−1) zera em −2, então o numerador também precisa zerar: 12 − 2a + a + 3 = 15 − a = 0 ⇒ a = 15. Aí o numerador é 3(x+2)(x+3) e o limite vale 3·1/(−3)·(−1) = 1."],
+["C","Q22a","Ache k para que f(x) = 3x + 7 (x ≤ 4) e kx − 1 (x > 4) seja contínua.",["5"],"","Os limites laterais em 4 devem coincidir: 3·4 + 7 = 19 = 4k − 1 ⇒ k = 5."],
+["C","Q24","f(x) = x² (x < 2), 5 (x = 2), −x + 6 (x > 2) é contínua em x = 2? (sim ou não)",["não","nao","n"],"sim / não","Os limites laterais valem 4 (pela esquerda) e 4 (pela direita), mas f(2) = 5. Limite ≠ valor da função, então há descontinuidade removível."],
+["C","Q26","Para qual m a função x² − 1 (x < 3), 2mx (x ≥ 3) é contínua em x = 3?",["4/3"],"Fração vale.","Pela esquerda: 9 − 1 = 8. Em x = 3: 6m. Então 6m = 8 ⇒ m = 4/3."],
+["C","Q28a","Calcule lim x→0 sen(4x)/x.",["4"],"","Escreva como 4·sen(4x)/(4x). Como sen(u)/u → 1, o limite é 4."],
+["C","Q28c","Calcule lim t→0 sen(3t)/sen(6t).",["1/2"],"Fração vale.","Divida e multiplique: [sen(3t)/3t]·[6t/sen(6t)]·(3t/6t) → 1·1·1/2 = 1/2."],
+["C","Q29","Se f(x) = √x, quanto vale f′(4)?",["1/4"],"Fração vale.","f′(x) = 1/(2√x). Em x = 4: 1/(2·2) = 1/4."],
+["C","Q31a","Qual a inclinação da reta tangente a f(x) = 4x² + 7x em x = −1?",["-1"],"","f′(x) = 8x + 7. Em x = −1: −8 + 7 = −1. (Com f(−1) = −3, a reta é y = −x − 4.)"],
+["C","Q34","Em quais valores de x a curva y = 2x³ + 3x² − 12x + 1 tem tangente horizontal?",["-2,1","1,-2"],"Separe por vírgula.","Tangente horizontal ⇒ y′ = 0. y′ = 6x² + 6x − 12 = 6(x+2)(x−1), então x = −2 ou x = 1 (pontos (−2, 21) e (1, −6))."],
+["C","Q38","Qual a inclinação da reta tangente a f(x) = 1/x em x = 1?",["-1"],"","f′(x) = −1/x². Em x = 1: −1. A tangente é y = −x + 2."],
+["C","Q43","Na parábola y = ax² + bx com tangente y = 3x − 2 em (1, 1), quanto vale a?",["2"],"","Passa por (1,1): a + b = 1. Inclinação 3 em x = 1: 2a + b = 3. Subtraindo, a = 2 (e b = −1)."],
+["C","Q45","A reta 2x + y = b é tangente a y = ax² quando x = 2. Quanto vale a?",["-1/2"],"Fração vale.","A inclinação da reta é −2. Em x = 2, y′ = 2a·2 = 4a = −2 ⇒ a = −1/2 (e então b = 2)."],
+["C","Q46","f(x) = x² (x ≤ 2), mx + b (x > 2). Para f ser diferenciável, quanto vale m?",["4"],"","As derivadas laterais em 2 devem coincidir: 2x = 4 pela esquerda, então m = 4. A continuidade dá 4 = 2m + b ⇒ b = −4."],
+["C","Q47a","Se y = (3x + 2)⁵, quanto vale dy/dx em x = 0?",["240"],"","Regra da cadeia: dy/dx = 5(3x+2)⁴·3 = 15(3x+2)⁴. Em x = 0: 15·16 = 240."],
+["C","Q49a","Em x² + y² = 1, derive implicitamente e calcule dy/dx no ponto (3/5, 4/5).",["-3/4"],"Fração vale.","2x + 2y·y′ = 0 ⇒ y′ = −x/y. No ponto: −(3/5)/(4/5) = −3/4."],
+["C","Q52a","f(x) = |x| é derivável em x = 0? (sim ou não)",["não","nao","n"],"sim / não","É contínua em 0, mas as derivadas laterais são −1 (esquerda) e 1 (direita). Como diferem, não é derivável: o gráfico tem um bico."]
+];
+const S={l:"A",i:0,st:{},sub:false,why:false};
+const $=id=>document.getElementById(id);
+const val=t=>{if(t.includes("/")){const p=t.split("/").map(Number);if(p.length==2&&p.every(isFinite)&&p[1])return p[0]/p[1]}const n=Number(t);return t!==""&&isFinite(n)?n:t};
+const norm=s=>s.toLowerCase().replace(/[\s()\[\]]/g,"").replace(/[−–]/g,"-").replace(/°/g,"").split(",").map(val);
+const eq=(a,b)=>a.length==b.length&&a.every((x,k)=>typeof x=="number"&&typeof b[k]=="number"?Math.abs(x-b[k])<1e-6:x===b[k]);
+const list=()=>Q.map((q,k)=>[q,k]).filter(([q])=>q[0]==S.l);
+function draw(){
+ const L=list(),done=L.filter(([,k])=>S.st[k]).length;
+ document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",t.dataset.l==S.l));
+ $("pb").style.width=(done/L.length*100)+"%";
+ $("m1").textContent="Questão "+Math.min(S.i+1,L.length)+" de "+L.length;
+ $("m2").textContent=L.filter(([,k])=>S.st[k]=="ok").length+" corretas";
+ $("dots").innerHTML=L.map(([q,k],j)=>`<button class="dot ${S.st[k]||""} ${j==S.i?"cur":""}" data-j="${j}" aria-label="Ir para questão ${j+1}">${j+1}</button>`).join("");
+ const st=$("stage");
+ if(S.i>=L.length){const ok=L.filter(([,k])=>S.st[k]=="ok").length;st.innerHTML=`<div class="card end"><b>${ok}/${L.length}</b><p>Você terminou esta lista. Clique nas bolinhas para rever qualquer questão.</p><button class="b" id="rs">Recomeçar</button></div>`;$("rs").onclick=()=>{L.forEach(([,k])=>delete S.st[k]);S.i=0;S.sub=S.why=false;draw()};return}
+ const [q,k]=L[S.i],r=S.st[k];
+ st.innerHTML=`<div class="card"><span class="ref">${q[1]}</span><p class="q">${q[2]}</p><p class="hint">${q[4]}</p>
+ <input id="in" autocomplete="off" inputmode="text" aria-label="Sua resposta" placeholder="Sua resposta" ${S.sub?"disabled":""}>
+ <div class="row" id="ac"></div><div id="fb"></div><div id="wy"></div></div>`;
+ const ac=$("ac");
+ if(!S.sub){ac.innerHTML=`<button class="b" id="go">Enviar</button>`;$("go").onclick=send;$("in").onkeydown=e=>{if(e.key=="Enter")send()};$("in").focus()}
+ else{$("in").value=S.last||"";
+  $("fb").innerHTML=r=="ok"?`<div class="fb ok">Correto! Muito bem.</div>`:`<div class="fb no">Não foi dessa vez. Resposta esperada: ${q[3][0]}</div>`;
+  ac.innerHTML=`<button class="b alt" id="wb">Por quê?</button>${r=="no"?`<button class="b alt" id="rt">Tentar de novo</button>`:""}<button class="b" id="nx">Próxima</button>`;
+  $("wb").onclick=()=>{S.why=!S.why;draw()};$("nx").onclick=()=>{S.i++;S.sub=S.why=false;draw()};
+  if($("rt"))$("rt").onclick=()=>{delete S.st[k];S.sub=S.why=false;draw()};
+  if(S.why)$("wy").innerHTML=`<div class="why">${q[5]}</div>`}
+}
+function send(){
+ const v=$("in").value.trim();if(!v){$("in").focus();return}
+ const [q,k]=list()[S.i],n=norm(v);
+ S.st[k]=q[3].some(a=>eq(norm(a),n))?"ok":"no";S.last=v;S.sub=true;S.why=false;draw();
+}
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{S.l=t.dataset.l;S.i=0;S.sub=S.why=false;draw()});
+$("dots").onclick=e=>{const b=e.target.closest(".dot");if(!b)return;S.i=+b.dataset.j;const k=list()[S.i][1];S.sub=!!S.st[k];S.why=false;S.last="";draw()};
+draw();
+</script>
+</body>
+</html>
